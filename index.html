@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<head lang="en-US">
+  <meta charset="utf-8">
+  <title>instrument</title>
+  <style>
+    body {
+      height: 100vh;
+      cursor: url(oth505.cur), auto;
+      font-family: "Times New Roman", sans-serif;
+      background: white;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    #container {
+      display: grid;
+      grid-gap: 1em;
+      grid-template-rows: repeat(var(--grid-rows), 1fr);
+      grid-template-columns: repeat(var(--grid-cols), 1fr);
+    }
+
+    .grid-item {
+      padding: 2em;
+      border: 12px solid black;
+      text-align: center;
+    }
+
+    .grid-item:hover {
+      transform: scale(1.1);
+      filter: contrast(2);
+      box-shadow: rgb(93, 97, 99) 10px 15px 10px;
+      font-variant: small-caps;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container">
+  </div>
+  <script src="https://unpkg.com/tone"></script>
+  <script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js?v=1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://algorithmicmusic.online/js/create-spectrum.js"></script>
+  <script src="https://algorithmicmusic.online/js/create-waveform.js"></script>
+  <script>
+    const container = document.getElementById("container");
+
+    //code is from stack overflow https://stackoverflow.com/questions/57550082/creating-a-16x16-grid-using-javascript
+    function makeRows(rows, cols) {
+      container.style.setProperty('--grid-rows', rows);
+      container.style.setProperty('--grid-cols', cols);
+      for (c = 0; c < (rows * cols); c++) {
+        let cell = document.createElement("div");
+        cell.innerText = (c + 1);
+        const randomColor = `hsl(${Math.random() * 360}, 70%, 70%)`;
+        cell.style.backgroundColor = randomColor;
+        container.appendChild(cell).className = "grid-item";
+      }
+    }
+
+    makeRows(3, 3);
+    const osc = new Tone.Oscillator(440, 'sine')
+    osc.toDestination()
+    const wave = createWaveform()
+    const spec = createSpectrum({
+      range: [20, 7040]
+    })
+    osc.connect(wave)
+    osc.connect(spec)
+  </script>
+
+
+</body>
