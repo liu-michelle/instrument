@@ -44,6 +44,7 @@
 
 <body>
   <div id="container"></div>
+  <div id="text"> </div>
   <script src="https://unpkg.com/tone"></script>
   <script>
     document.body.addEventListener("click", () => {
@@ -63,12 +64,12 @@
       new Tone.AutoPanner("4n"),
       new Tone.BitCrusher(4),
       new Tone.Chorus(4, 2.5, 0.5),
-      new Tone.Vibrato(5, 0.1),
+      new Tone.Vibrato(5, 0.3),
       new Tone.Phaser(0.5, 3, 350),
       new Tone.PitchShift(4),
     ];
 
-    //got this code from stack overflow
+    //i got this make grid code from stack overflow https://stackoverflow.com/questions/57550082/creating-a-16x16-grid-using-javascript
     function makeRows(rows, cols) {
       container.style.setProperty('--grid-rows', rows);
       container.style.setProperty('--grid-cols', cols);
@@ -84,10 +85,12 @@
           osc.disconnect();
           let effectIndex = c % effects.length;
           osc.connect(effects[effectIndex].toDestination());
+          document.getElementById('text').textContent = '100% ' + effects[effectIndex];
         });
 
         cell.addEventListener("mouseleave", () => {
           osc.disconnect();
+          document.getElementById('text').textContent = '';
           osc.connect(effect);
         });
 
