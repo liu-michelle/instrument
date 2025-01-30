@@ -1,34 +1,37 @@
 <!DOCTYPE html>
+<html lang="en-US">
 
-<head lang="en-US">
+<head>
   <meta charset="utf-8">
-  <title>instrument</title>
+  <title>Instrument</title>
   <style>
     body {
       height: 100vh;
       cursor: pointer;
       font-family: "Times New Roman", sans-serif;
       background: white;
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
+      display: flex;
       justify-content: center;
       align-items: center;
     }
 
     #container {
       display: grid;
+      --grid-rows: 3;
+      --grid-cols: 3;
       grid-template-rows: repeat(var(--grid-rows), 1fr);
       grid-template-columns: repeat(var(--grid-cols), 1fr);
+      gap: 5px;
     }
 
     .grid-item {
       padding: 2em;
-      border: 10px solid black;
+      border: 5px solid black;
       text-align: center;
       font-weight: bold;
       color: black;
+      cursor: pointer;
+      transition: transform 0.2s ease-in-out;
     }
 
     .grid-item:hover {
@@ -42,33 +45,30 @@
 <body>
   <div id="container"></div>
   <script src="https://unpkg.com/tone"></script>
-  <script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js?v=1"></script>
-  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-  <script src="https://algorithmicmusic.online/js/create-spectrum.js"></script>
-  <script src="https://algorithmicmusic.online/js/create-waveform.js"></script>
   <script>
     document.body.addEventListener("click", () => {
       Tone.start();
     });
+
     const container = document.getElementById("container");
+
     const osc = new Tone.Oscillator(440, 'sine').start();
-    const gain = new Tone.Gain(1).toDestination();
-    osc.connect(gain);
-    osc.connect(Tone.Destination);
+    const effect = new Tone.Gain(1).toDestination();
+    osc.connect(effect);
 
     const effects = [
-      new Tone.FeedbackDelay("8n", 0.5), // Feedback delay
-      new Tone.Distortion(0.5), // Distortion
-      new Tone.AutoFilter("4n"), // Autofilter
-      new Tone.AutoPanner("4n"), // Autopanner
-      new Tone.BitCrusher(4), // Bit crusher
-      new Tone.Chorus(4, 2.5, 0.5), // Chorus
-      new Tone.Vibrato(5, 0.1), // Vibrato
-      new Tone.Phaser(0.5, 3, 350), // Phaser
-      new Tone.PitchShift(4), // Pitch shift
+      new Tone.FeedbackDelay("8n", 0.5),
+      new Tone.Distortion(),
+      new Tone.AutoFilter("4n"),
+      new Tone.AutoPanner("4n"),
+      new Tone.BitCrusher(4),
+      new Tone.Chorus(4, 2.5, 0.5),
+      new Tone.Vibrato(5, 0.1),
+      new Tone.Phaser(0.5, 3, 350),
+      new Tone.PitchShift(4),
     ];
 
-    //code is from stack overflow https://stackoverflow.com/questions/57550082/creating-a-16x16-grid-using-javascript
+    //got this code from stack overflow
     function makeRows(rows, cols) {
       container.style.setProperty('--grid-rows', rows);
       container.style.setProperty('--grid-cols', cols);
@@ -77,72 +77,26 @@
         cell.innerText = c + 1;
         cell.className = "grid-item";
 
-        // Assign random color
         const randomColor = `hsl(${Math.random() * 360}, 70%, 70%)`;
         cell.style.backgroundColor = randomColor;
 
-        // Apply Effect on Hover
         cell.addEventListener("mouseenter", () => {
-          osc.disconnect(); // Remove previous effect
-          osc.connect(effects[c % effects.length]).connect(gain); // Apply new effect
+          osc.disconnect();
+          let effectIndex = c % effects.length;
+          osc.connect(effects[effectIndex].toDestination());
         });
 
-        // Remove effect when leaving the grid item
         cell.addEventListener("mouseleave", () => {
           osc.disconnect();
-          osc.connect(gain); // Reset to normal sine wave
+          osc.connect(effect);
         });
-    
+
         container.appendChild(cell);
       }
     }
-      makeRows(3, 3);
 
-
-      //code is from https://algorithmicmusic.online/editor/#nn.min.js/GUI%20(graphical%20user%20interface)/upload%20file
-      /*    function loadFileToBuffer(file) {
-            // we'll use the FileReader API...
-            const reader = new window.FileReader()
-
-            // we'll setup the "onload" event listener,
-            // to decode the audio data from the file's data
-            // and apply it to the player's buffer
-            reader.onload = async (e) => {
-              const fileData = e.target.result
-              const buffer = await Tone.context.decodeAudioData(fileData)
-              player.buffer = buffer
-            }
-            reader.readAsArrayBuffer(file)
-          }
-
-          nn.create('input')
-            .set({
-              type: 'file',
-              accept: 'audio/*'
-            })
-            .addTo('body')
-            .on('change', () => {
-              const file = event.target.files[0]
-              if (file) loadFileToBuffer(file)
-            })
-
-          nn.create('button')
-            .content('play')
-            .addTo('body')
-            .on('click', () => player.start())
-      */
-
-      /*
-          osc.toDestination()
-          osc.start()
-          const wave = createWaveform()
-          const spec = createSpectrum({
-            range: [20, 7040]
-          })
-          osc.connect(wave)
-          osc.connect(spec)
-          */
+    makeRows(3, 3);
   </script>
-
-
 </body>
+
+</html>
