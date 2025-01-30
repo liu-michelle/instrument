@@ -21,12 +21,11 @@
         --grid-cols: 3;
         grid-template-rows: repeat(var(--grid-rows), 1fr);
         grid-template-columns: repeat(var(--grid-cols), 1fr);
-        gap: 5px;
       }
 
       .grid-item {
         padding: 2em;
-        border: 5px solid black;
+        border: 2px solid black;
         text-align: center;
         font-weight: bold;
         color: black;
@@ -37,14 +36,29 @@
       .grid-item:hover {
         transform: scale(1.1);
         filter: contrast(3);
-        font-variant: small-caps;
       }
+
+      #text {
+        position: absolute;
+        color: white;
+        font-size: 3vw;
+        font-variant: small-caps;
+        font-weight: bold;
+      }
+/*
+      #container {
+    position: absolute;
+    font-weight: bold;
+    display: block;
+    transform: skew(-8deg, -1deg);
+    margin: 5px;
+      */
     </style>
   </head>
 
   <body>
     <div id="container"></div>
-    <div id="text"> </div>
+    <div id="text"></div>
     <script src="https://unpkg.com/tone"></script>
     <script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js?v=1"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
@@ -92,12 +106,17 @@
             document.getElementById('text').textContent = '100% ' + effects[effectIndex];
             effects[effectIndex].connect(wave);
             effects[effectIndex].connect(spec);
+            cell.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 70%)`;
+            document.body.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 70%)`;
           });
 
           cell.addEventListener("mouseleave", () => {
             osc.disconnect();
             document.getElementById('text').textContent = '';
             osc.connect(effect);
+            osc.connect(wave);
+            osc.connect(spec);
+            document.body.style.backgroundColor = 'white';
           });
 
           container.appendChild(cell);
