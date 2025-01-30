@@ -1,105 +1,117 @@
 <!DOCTYPE html>
 <html lang="en-US">
 
-<head>
-  <meta charset="utf-8">
-  <title>Instrument</title>
-  <style>
-    body {
-      height: 100vh;
-      cursor: pointer;
-      font-family: "Times New Roman", sans-serif;
-      background: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    #container {
-      display: grid;
-      --grid-rows: 3;
-      --grid-cols: 3;
-      grid-template-rows: repeat(var(--grid-rows), 1fr);
-      grid-template-columns: repeat(var(--grid-cols), 1fr);
-      gap: 5px;
-    }
-
-    .grid-item {
-      padding: 2em;
-      border: 5px solid black;
-      text-align: center;
-      font-weight: bold;
-      color: black;
-      cursor: pointer;
-      transition: transform 0.2s ease-in-out;
-    }
-
-    .grid-item:hover {
-      transform: scale(1.1);
-      filter: contrast(3);
-      font-variant: small-caps;
-    }
-  </style>
-</head>
-
-<body>
-  <div id="container"></div>
-  <div id="text"> </div>
-  <script src="https://unpkg.com/tone"></script>
-  <script>
-    document.body.addEventListener("click", () => {
-      Tone.start();
-    });
-
-    const container = document.getElementById("container");
-
-    const osc = new Tone.Oscillator(440, 'sine').start();
-    const effect = new Tone.Gain(1).toDestination();
-    osc.connect(effect);
-
-    const effects = [
-      new Tone.FeedbackDelay("8n", 0.5),
-      new Tone.Distortion(),
-      new Tone.AutoFilter("4n"),
-      new Tone.AutoPanner("4n"),
-      new Tone.BitCrusher(4),
-      new Tone.Chorus(4, 2.5, 0.5),
-      new Tone.Vibrato(5, 0.3),
-      new Tone.Phaser(0.5, 3, 350),
-      new Tone.PitchShift(4),
-    ];
-
-    //i got this make grid code from stack overflow https://stackoverflow.com/questions/57550082/creating-a-16x16-grid-using-javascript
-    function makeRows(rows, cols) {
-      container.style.setProperty('--grid-rows', rows);
-      container.style.setProperty('--grid-cols', cols);
-      for (let c = 0; c < (rows * cols); c++) {
-        let cell = document.createElement("div");
-        cell.innerText = c + 1;
-        cell.className = "grid-item";
-
-        const randomColor = `hsl(${Math.random() * 360}, 70%, 70%)`;
-        cell.style.backgroundColor = randomColor;
-
-        cell.addEventListener("mouseenter", () => {
-          osc.disconnect();
-          let effectIndex = c % effects.length;
-          osc.connect(effects[effectIndex].toDestination());
-          document.getElementById('text').textContent = '100% ' + effects[effectIndex];
-        });
-
-        cell.addEventListener("mouseleave", () => {
-          osc.disconnect();
-          document.getElementById('text').textContent = '';
-          osc.connect(effect);
-        });
-
-        container.appendChild(cell);
+  <head>
+    <meta charset="utf-8">
+    <title>Instrument</title>
+    <style>
+      body {
+        height: 100vh;
+        cursor: pointer;
+        font-family: "Times New Roman", sans-serif;
+        background: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
-    }
 
-    makeRows(3, 3);
-  </script>
-</body>
+      #container {
+        display: grid;
+        --grid-rows: 3;
+        --grid-cols: 3;
+        grid-template-rows: repeat(var(--grid-rows), 1fr);
+        grid-template-columns: repeat(var(--grid-cols), 1fr);
+        gap: 5px;
+      }
+
+      .grid-item {
+        padding: 2em;
+        border: 5px solid black;
+        text-align: center;
+        font-weight: bold;
+        color: black;
+        cursor: pointer;
+        transition: transform 0.2s ease-in-out;
+      }
+
+      .grid-item:hover {
+        transform: scale(1.1);
+        filter: contrast(3);
+        font-variant: small-caps;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="container"></div>
+    <div id="text"> </div>
+    <script src="https://unpkg.com/tone"></script>
+    <script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js?v=1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://algorithmicmusic.online/js/create-spectrum.js"></script>
+    <script src="https://algorithmicmusic.online/js/create-waveform.js"></script>
+    <script>
+      document.body.addEventListener("click", () => {
+        Tone.start();
+      });
+
+      const container = document.getElementById("container");
+
+      const osc = new Tone.Oscillator(440, 'sine').start();
+      const effect = new Tone.Gain(1).toDestination();
+      osc.connect(effect);
+
+      const effects = [
+        new Tone.FeedbackDelay("8n", 0.5),
+        new Tone.Distortion(),
+        new Tone.AutoFilter("4n"),
+        new Tone.AutoPanner("4n"),
+        new Tone.BitCrusher(4),
+        new Tone.Chorus(4, 2.5, 0.5),
+        new Tone.Vibrato(5, 0.3),
+        new Tone.Phaser(0.5, 3, 350),
+        new Tone.PitchShift(4),
+      ];
+
+      //i got this make grid code from stack overflow https://stackoverflow.com/questions/57550082/creating-a-16x16-grid-using-javascript
+      function makeRows(rows, cols) {
+        container.style.setProperty('--grid-rows', rows);
+        container.style.setProperty('--grid-cols', cols);
+        for (let c = 0; c < (rows * cols); c++) {
+          let cell = document.createElement("div");
+          cell.innerText = c + 1;
+          cell.className = "grid-item";
+
+          const randomColor = `hsl(${Math.random() * 360}, 70%, 70%)`;
+          cell.style.backgroundColor = randomColor;
+
+          cell.addEventListener("mouseenter", () => {
+            osc.disconnect();
+            let effectIndex = c % effects.length;
+            osc.connect(effects[effectIndex].toDestination());
+            document.getElementById('text').textContent = '100% ' + effects[effectIndex];
+            effects[effectIndex].connect(wave);
+            effects[effectIndex].connect(spec);
+          });
+
+          cell.addEventListener("mouseleave", () => {
+            osc.disconnect();
+            document.getElementById('text').textContent = '';
+            osc.connect(effect);
+          });
+
+          container.appendChild(cell);
+        }
+      }
+
+      makeRows(3, 3);
+      const wave = createWaveform()
+      const spec = createSpectrum({
+        range: [20, 7040]
+      })
+      osc.connect(wave)
+      osc.connect(spec)
+    </script>
+  </body>
 
 </html>
